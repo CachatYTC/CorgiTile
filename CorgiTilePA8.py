@@ -1,4 +1,4 @@
-#try:
+#Импорт
 import pygame
 from pygame import mixer
 from tkinter import *
@@ -16,15 +16,12 @@ from time import gmtime, strftime
 import yaml
 root = Tk()
 mixer.init()
-#except:
-#    print("Fatal: ImportLibraries.")
-#    input("OK [Enter]")
-#    exit()
+#Есои системный месяц декабрь или январь - включаем новогодний режим
 if int(strftime("%m", gmtime())) == 12 or int(strftime("%m", gmtime())) == 1:
     isNewYear = True
 else:
     isNewYear = False
-
+#создаем полноэкранное окно
 try:
     root.attributes('-fullscreen', True)
 except:
@@ -34,31 +31,35 @@ except:
         print("Fatal: CreateWindow.")
         input("OK [Enter]")
         exit()
-
+#списки
 spr = {}
 particles = {}
-
+#версия. Если будете форкаться - прошу добавить название своего проекта сюда
 version = "PA8"
 
 water = []
 root.iconbitmap('data/icon.ico')
+#Называем наше окно. В соответствии с новогодним режимом
 if isNewYear == False:
     root.title("CorgiTile "+version)
 else:
     root.title("CorgiTile "+version+": Happy New Year!")
-
+#Загружаем продвинутые настройки из файла
 with open("data/settings.yml", 'r') as stream:
     try:
         settyaml = yaml.safe_load(stream)
         paramount = int(settyaml["particles-amount"])
     except:
         mb.showerror("Ошибка","Ошибка загрузки settings.yml")
+        
+#Включаем музычку в фоне
 if settyaml["ambient-music"] == True:
     if isNewYear == False:
         pygame.mixer.music.load('data/sound/ambient/ambientmusic.mp3')
     else:
         pygame.mixer.music.load('data/sound/ambient/ambientmusicnewyear.mp3')
     pygame.mixer.music.play(-1)
+#Настраиваем и создаем переменные, списки, словари
 bu = ""
 CHUNK = 1024
 fanim = True
@@ -96,7 +97,7 @@ stdplace = ["B","G"," ","S","H","M","S","D","N"]
 fireable = ["S","G","Q","E"]
 transparent = ["P","B","G"," ","#","F","N", "V", "I","*","@","Z","W", "F"]
 natural = ["G","M","B","I","W","#","F", "*"]
-
+#Загружаем моды. 
 with open("custom/yamls/tiles.yml", 'r') as stream:
     #try:
     tilesyaml = yaml.safe_load(stream)
@@ -129,7 +130,7 @@ if tilesyaml["enabled"] == True:
             mb.showerror("Ошибка", "В tiles.yml спользуется зарезервированный символ: "+register[i]+", нажмите 'ОК', и ошимка будет проигнорирована!")
         
 
-#STDSPRITELOADER
+#STDSPRITELOADER - загружаем стандартные спрайты. (некоторые стандартные и все модовские)
 for s in range(len(stdload)):
     if s < 12:
         spr[stdload[s]] = Image.open("data/sprites/"+sprpath[s]+".png")
@@ -141,13 +142,15 @@ for s in range(len(stdload)):
 canvas = Canvas(bg="blue", width=1920, height=1080)
 canvas.place(x= -5, y= -5)
 
-
+#Загружаем картинки для GUI
 gui["inventory"] = Image.open("data/gui/inventory.png")
 gui["inventory"] = gui["inventory"].resize((1200, 700))
 gui["inventory"] = ImageTk.PhotoImage(gui["inventory"])
 gui["hotbar"] = Image.open("data/gui/hotbar.png")
 gui["hotbar"] = gui["hotbar"].resize((1500, 100))
 gui["hotbar"] = ImageTk.PhotoImage(gui["hotbar"])
+
+#Загружаем остальные картинки
 if True:
 
     sound["place"] = pygame.mixer.Sound('data/sound/place.mp3')
@@ -248,11 +251,8 @@ if True:
     spr["Z1"] = ImageTk.PhotoImage(spr["Z1"])
     spr["Z2"] = ImageTk.PhotoImage(spr["Z2"])
     spr["Z3"] = ImageTk.PhotoImage(spr["Z3"])
-#except:
-#    input("Fatal: data import error. Press [Enter] to exit")
-#    exit()
-
     
+#Функция возврата в главное меню
 def tomain():
     mamen.destroy()
     try:
@@ -281,6 +281,7 @@ def tomain():
     
     main_menu()
 
+#Генератор карты
 def gen():
     global dog
     global gm, fire, firebu, water, seedentry, l4, summer, winter, isWinter, paramount
@@ -388,15 +389,13 @@ def gen():
             h=e2.get()
             w=e3.get()
             asdfg=True
-    #for udfuis in range(h*w):
-     #   gm.append("G")
     l0.destroy()
     ls.destroy()
     moderad1.destroy()
     moderad2.destroy()
     summer.destroy()
     winter.destroy()
-    #GENERATOR
+    #GENERATOR - выше был GUI и настройки, ниже - сам генератор
 
     if vari.get() == 0:
         isWinter = False
@@ -429,12 +428,10 @@ def gen():
 
         noise = PerlinNoise(octaves=int(w/10+2), seed=int(seed))
         xpix, ypix = w, h
-        #progresslabel.destroy()
         progresslabel["text"] = "Генерация: генерация шума Перлина.."
-        #Label(text="Генерация: генерация шума Перлина..", font="Arial 20")
         root.update()
         pic = [[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)]
-        progresslabel["text"] = "Генерация: генерация шума Перлина."# = Label(text="Генерация: генерация шума Перлина.", font="Arial 20")
+        progresslabel["text"] = "Генерация: генерация шума Перлина."
         root.update()
         if isWinter == False:
             for thisline in range(len(pic)):
@@ -452,9 +449,7 @@ def gen():
                         pass
                     #progresslabel.destroy()
                     progresslabel["text"] = "Генерация: генерация строк "+str(thisline)+"/"+str(h)# = Label(text="Генерация: генерация строк "+str(thisline)+"/"+str(h), font="Arial 20")
-                    #progresslabel.pack(side=TOP)
                     root.update()
-                #print("progress: "+str(thisline)+"/"+str(h))
         else:
             for thisline in range(len(pic)):
                 for thistile in range(len(pic[thisline])):
@@ -469,11 +464,8 @@ def gen():
                             pic[thisline][thistile] = "M"
                     except:
                         pass
-                    #progresslabel.destroy()
                     progresslabel["text"] = "Генерация: генерация строк "+str(thisline)+"/"+str(h)# = Label(text="Генерация: генерация строк "+str(thisline)+"/"+str(h), font="Arial 20")
-                    #progresslabel.pack(side=TOP)
                     root.update()
-                #print("progress: "+str(thisline)+"/"+str(h))
         progresslabel.destroy()
         gm = list(itertools.chain(*pic))
         
@@ -496,7 +488,9 @@ def gen():
     startsm = True
     main(dog, gm, h, w, n, [], int(len(gm)/2), bu, 1, [], [], True, True, True, [], [], [], True, 0, True, isWinter, paramount)
     
+#Загрузяик миров
 def load():
+    #настройки всякие. И GUI
     global nolo
     global qwerty
     qwerty = False
@@ -547,7 +541,6 @@ def load():
     e1.pack(side=TOP)
     b1 = Button(text="Загрузить", width=15, height=3, command=bri)
     b1.pack()
-    #verwar = Label(text="Версии не совпадают!", font="Arial 20")
 
     while qwerty == False:
         root.update()
@@ -555,21 +548,13 @@ def load():
 
     n=e1.get()
         
-    #while doopenfile==True:
-    #    try:
-    #        testf = open("worlds/"+n+"/data.csave","r")
-    #        testf.close()
-    #        qwerty = True
-    #        break
-    #    except FileNotFoundError:
-    #        tomain()
     n=e1.get()
     loadvers = ""
+    
+    #Загружаем основную дату
     try:
         f = open("worlds/"+n+"/data.csave","r")
-        #print(f.closed)
         for line in f:
-            #print(f.closed)
             gysdz = gysdz+1
             if gysdz==1:
                 w=int(line)
@@ -593,16 +578,14 @@ def load():
             if gysdz==9:
                 seasontick=int(line)
         f.close()
-        #verserr = False
-        #nolo = False
+        #Проверяем версию
         loadvers = loadvers.replace("\n", "")
         if loadvers != version:
-            #    nolo = True
             mb.showerror("Ошибка совместимости!", "Мир был в последний раз сохранен в версии "+str(loadvers)+", вы используете "+version+" загружайте на свой страх и риск!")
         f = open("worlds/"+n+"/map.csave")
         gm=list(f.read())
         f.close()
-        
+        #Загружаем остальные списки
         f = open("worlds/"+n+"/dogs.csave")
         for line in f:
             if line != "None":
@@ -660,20 +643,16 @@ def load():
     gm[stv] = "*"
     startsm = True
     main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, True, True, True, duck, duckbuf, duckrot, True, seasontick, True, isWinter, paramount)
-    #except:
-        #pass
-
+#Функция выхода
 def exitt():
-    print("You don't own the corgi, it is the corgi who own you!")
+    print("You don't own the corgi, it is the corgi who own you!") #Пасхалочка)))
     global nolo
     nolo = True
-    #exit()
     root.destroy()
 
 turbomode = False
-#def showparticles(particletype, amount):
-#    global canvas
 
+#Функция смены сезонов
 def seasonreplacer(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision, fanim, duck, duckbuf, duckrot, turbomode, seasontick, nextseason, isWinter, paramount):
     if isWinter == False:
         for hkicsdkhsdhu in range(2):
@@ -727,7 +706,7 @@ def seasonreplacer(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, 
 
 
     
-
+#Меню настроек
 def settings(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision, fanim, duck, duckbuf, duckrot, turbomode, seasontick, nextseason, isWinter, paramount):
     global dogValue, chkExample, vki, chkExample, colValue, colExample, fValue, fExample, turboValue, iswValue, seasonValue
     def toseasonreplacer():
@@ -791,7 +770,7 @@ def settings(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collis
 
 
 
-
+#Основной код игры
 def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision, fanim, duck, duckbuf, duckrot, turbomode, seasontick, nextseason, isWinter, paramount):
     global dl
     global prodo
@@ -837,9 +816,7 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
         settings(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision, fanim, duck, duckbuf, duckrot, turbomode, seasontick, nextseason, isWinter, paramount)
     def prmap():
         nonlocal bu, isWinter, paramount
-        #p1 = time.perf_counter()
         try:
-            #lmap["text"] = ""
             canvas.delete("all")
             a=0
             
@@ -916,7 +893,6 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
                             thisduck = duck.index(lwt+a)
                             if duckbuf[thisduck] != "W":
                                 canvas.create_image(imsrdx, imsrdy, image=spr[duckbuf[thisduck]])
-                                #canvas.create_image(imsrdx, imsrdy, image=spr["Z"+str(duckrot[thisduck])])
                             else:
                                 canvas.create_image(imsrdx, imsrdy, image=spr["W"+str(random.randint(1,3))])
                             canvas.create_image(imsrdx, imsrdy, image=spr["Z"+str(duckrot[thisduck])])
@@ -932,10 +908,6 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
                         
                         imsrdx += 64
                         a += 1
-                        #try:
-                        #create_rectangle(imsrdx, imsrdy, imsrdx+64, imsrdy+64, fill='black', alpha=0.5)
-                       # except:
-                        #    pass
                 a = 0
                 a += w*hlwnji+1
                 imsrdy += 64
@@ -949,13 +921,10 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
                 canvas.create_image(775, 800, image=gui["hotbar"])
                 itx = 220
                 for i in range(len(hotbar)-1):
-                    #print(idtospr[i])
                     canvas.create_image(itx, 800, image=spr[idtospr[hotbar[i+1]]])
                     if i+1 == slot:
                         canvas.create_rectangle(itx+32, 800+32, itx-32, 800-32, outline="red")
                     itx += 100
-            #for gf in range(len(gm)):
-            #    light.append(0)
         except:
             pass
         
@@ -965,7 +934,6 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
     while cicl == True:
         if Simulation == True:
             a1 = time.perf_counter()
-            #if nextseason == True:
             if seasontick >= 7500:
                 seasonreplacer(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision, fanim, duck, duckbuf, duckrot, turbomode, seasontick, nextseason, isWinter, paramount)
         #WASD
@@ -1032,7 +1000,6 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
         #BUILD
             try:
                 if idtospr[hotbar[slot]] in stdplace:
-                    #if hotbar[slot] == 3:
                     if keyboard.is_pressed("right") and idtospr[hotbar[slot]] != gm[stv+1]:
                         gm[stv+1] = idtospr[hotbar[slot]]
                         sound["place"].play()
@@ -1211,7 +1178,7 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
                         gm[stv+w] = "Z"
                         sound["place"].play()
                         duckrot.append(3)
-        #SAVE
+        #SAVE - сохраняет мир
             def save():
                 try:
                     os.mkdir("worlds/"+n)
@@ -1341,8 +1308,6 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
                 pass
         #FIRE
             for cik in range(len(fire)):
-                #cik = cika1
-                #if True:#cik < len(fire):
                 if isWinter == False:
                     try:
                         
@@ -1509,7 +1474,6 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
                 while prodsm == False:
                     root.update()
                     time.sleep(0.1)
-                #print("ok")
                 cicl = True
                 exi.destroy()
                 sett.destroy()
@@ -1517,14 +1481,12 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
                 prodo.destroy()
                 sav.destroy()
                 root.config(cursor="none")
-            #keyboard.press('w, a, s, d')
 
-            #INVENTORYe
+            #INVENTORY
             if keyboard.is_pressed("E"):
 
 
                 while keyboard.is_pressed("E"):
-                    #time.sleep(0.05)
                     prmap()
                     root.config(cursor="")
                     canvas.create_image(770, 440, image=gui["inventory"])
@@ -1544,7 +1506,6 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
                     canvas.create_rectangle(220-32+(hotbar[slot]-1)*64-line*64*18,140-32+line*64,220+32+(hotbar[slot]-1)*64-line*64*18,140+32+line*64, outline="red")
                     if keyboard.is_pressed("right") and hotbar[slot] not in invedger:
                         hotbar[slot] += 1
-                        #time.sleep(0.1)
                     if keyboard.is_pressed("left") and hotbar[slot] not in invedgel:
                         hotbar[slot] -= 1
                     if keyboard.is_pressed("down") and line < 9:
@@ -1553,26 +1514,20 @@ def main(dog, gm, h, w, n, dogs, stv, bu, plrot, dogrot, dogbuf, DAI, collision,
                     if keyboard.is_pressed("up") and line > 0:
                         hotbar[slot] -= 18
                         line -= 1
-                    #time.sleep(0.05)
                     root.update()
                 root.config(cursor="none")
                 Simulation = True
                 hotbar[slot]
                 
             if nextseason == True:
-                seasontick += 1
-            #print(isWinter, seasontick)
             prmap()
             root.update()
-            #if isWinter == True:
-            #if particletype == "snow":
-            #showparticles("snow", 200)
             if turbomode == True:
                 if 0.08 - (time.perf_counter()-a1) > 0:
                     time.sleep(0.08 - (time.perf_counter()-a1))
                 else:
                     pass
-
+#Главное меню игры
 def main_menu():
     root.config(cursor="")
     global mml
@@ -1584,19 +1539,18 @@ def main_menu():
     def prmenbg():
         canvas = Canvas(bg="blue", width=1920, height=1080)
         canvas.place(x= -5, y= -5)
-        #lmap["text"] = ""
         try:
             canvas.delete("all")
         except:
             pass
         a=0
-
+        #Да-да. Именно так хранится мир, который вы видите у себя на заднем фоне главного меню
         stv = 1308
         dogbuf = list("      ")
         dogrot = [0,2,1,3,1,2]
         dogs = [1408,1111,1154,1462,1508,1453]
         gm = list("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGHGGGGGGGGGGGGGGGGGGHGHGGGGGGGGGGGGGGG*GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGHH   H @  HGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGH@H   Q    HGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGH H   H    HGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGH  H   HHHHHHGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGH  Q  *H    HGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGHHHHHEHHH    HGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGH       @H    HGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGH   @     Q  @ HGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGH       @H    HGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHHHEHGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG")
-
+        #Добавим вам немного елочек в новый год
         if isNewYear == True:
             for trt in range(len(gm)):
                 if gm[trt] == "G":
@@ -1619,8 +1573,6 @@ def main_menu():
             for hlwnji in range(hwd):
                 for geruiebrf in range (wwd):
                     if hlwnji != 0:
-                        #lmap["text"] += gm[lwt+a] + "="
-                        #imag = spr[gm[lwt+a]]
                         try:
                             imag = spr[gm[lwt+a]]
                             canvas.create_image(imsrdx, imsrdy, image=imag)
@@ -1655,8 +1607,6 @@ def main_menu():
             if isNewYear == True:
                 for i in range(1000):
                     canvas.create_image(random.randint(0, 1920), random.randint(0, 1080), image=particles["S"+str(random.randint(1,2))])
-                #lmap["text"] += "\n"
-            #lmap["text"] += "\nПредмет:"+str(slot)
         except IndexError:
             pass
     
@@ -1702,8 +1652,8 @@ def main_menu():
     mmg.pack(side=TOP)
     mmex.pack(side=TOP)
     versti.pack(side=BOTTOM)
-    #playaudio(wave.open("audio.wav", 'rb'))
     while startsm == False:
         root.update()
         time.sleep(0.1)
+#Игра начинается от сюда. С конца.
 main_menu()
