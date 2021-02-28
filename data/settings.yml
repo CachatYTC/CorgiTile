@@ -1,0 +1,6 @@
+
+#Number of particles per frame
+particles-amount: 3
+hight-view-distanse: 17
+width-view-distanse: 24
+ambient-music: true
